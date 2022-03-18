@@ -1,24 +1,18 @@
+using DataStructures
+
 includet("../primes.jl")
 
-divisors(n::Int) = divisors(factorize(n) |> first)
-function divisors(factorization)
-    [2]
-end
-
 n = 0
-for k in 1:10
+for k in 1:100000
     n += k
-    d = divisors(n)
-    if length(d) > 500
+    d = n |> factorize |> first |> counter
+    if n_divisors(d) > 500
         @show n
         break
     end
 end
 
-d = 20 |> factorize |> first |> dict_factorize
+d = 76576500 |> factorize |> first |> counter
+divisors(d)
+n_divisors(d)
 
-divs = zeros(Int, 1 .+ values(d)... )
-for (p, m) in d
-    for i in 0:m
-        divs
-end

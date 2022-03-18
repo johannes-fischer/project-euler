@@ -14,16 +14,14 @@ function sieve_of_eratosthenes(N)
     findall(primes)
 end
 
-function factorize(N)
-    fact, n = factorize(N, sieve_of_eratosthenes(Int(round(sqrt(N)))))
-    if n != 1
-        # Then n has to be the last prime factor
-        push!(fact, n)
-        n = 1
-    end
-    return fact, n
-end
+factorize(N) = factorize(N, sieve_of_eratosthenes(Int(round(sqrt(N)))))
+"""
+Return array of all primes with multiples
 
+Requires that primes contains all primes until sqrt(N)
+
+use `DataStructures.counter(factorization)` to get a Dict
+"""
 function factorize(N, primes)
     factorization = Int[]
     i = 1
@@ -38,13 +36,24 @@ function factorize(N, primes)
         end
         N == 1 && break
     end
-    factorization, N
+    if N != 1
+        # Then n has to be the last prime factor
+        push!(factorization, N)
+    end
+    factorization
 end
 
-function dict_factorize(factorization)
-    d = Dict{Int,Int}()
-    for p in factorization
-        p in keys(d) ? d[p] += 1 : d[p] = 1
+function divisors(factorization::AbstractDict{Int,Int})
+    divs = ones(Int, 1 .+ values(factorization)...)
+    for (i, (p, m)) in enumerate(factorization)
+        x = p .^ (0:m)
+        dims = ones(Int, ndims(divs))
+        dims[i] = m + 1
+        divs .*= reshape(x, dims...)
     end
-    d
+    sort(divs[:])
 end
+
+true_divisors(factorization::AbstractDict) = divisors(factorization)[1:end-1]
+
+n_divisors(factorization::AbstractDict{Int,Int}) = prod(1 .+ values(factorization))
